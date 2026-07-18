@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexCart Sales Analytics Dashboard</title>
+    <meta name="description" content="Premium E-commerce Sales Analytics & Advanced SQL Analysis Dashboard for 20,000+ Transactions">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SQL.js WebAssembly CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <svg class="brand-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+                <div class="brand-text">
+                    <span class="brand-main">NexCart</span>
+                    <span class="brand-sub">ANALYTICS</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <button class="nav-item active" data-tab="overview">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+                    <span>Overview</span>
+                </button>
+                <button class="nav-item" data-tab="products">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                    <span>Products Catalog</span>
+                </button>
+                <button class="nav-item" data-tab="customers">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    <span>Customers</span>
+                </button>
+                <button class="nav-item" data-tab="operations">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <span>Operations & Trends</span>
+                </button>
+                <button class="nav-item" data-tab="sql-console">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+                    <span>SQL Query Console</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="db-badge">
+                    <div class="db-status-dot connected"></div>
+                    <div class="db-info">
+                        <span class="db-name">SQLite Connected</span>
+                        <span class="db-records" id="db-records-count">Loading rows...</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="content-header">
+                <div class="header-title-area">
+                    <h1 id="page-title">Executive Overview</h1>
+                    <p id="page-subtitle">Key Performance Indicators & Enterprise Performance Analytics</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" id="btn-refresh">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                        Refresh Data
+                    </button>
+                </div>
+            </header>
+
+            <!-- Scrollable Content -->
+            <div class="content-body">
+                
+                <!-- TAB: OVERVIEW -->
+                <div class="tab-pane active" id="tab-overview">
+                    <!-- KPI Cards Grid -->
+                    <div class="kpi-grid">
+                        <div class="kpi-card purple">
+                            <div class="kpi-header">
+                                <span class="kpi-title">Gross Revenue</span>
+                                <div class="kpi-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                                </div>
+                            </div>
+                            <div class="kpi-value" id="kpi-revenue">$0.00</div>
+                            <div class="kpi-subtext">Total generated sales volume</div>
+                        </div>
+
+                        <div class="kpi-card blue">
+                            <div class="kpi-header">
+                                <span class="kpi-title">Net Profit</span>
+                                <div class="kpi-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                                </div>
+                            </div>
+                            <div class="kpi-value" id="kpi-profit">$0.00</div>
+                            <div class="kpi-subtext">Revenue minus product COGS</div>
+                        </div>
+
+                        <div class="kpi-card green">
+                            <div class="kpi-header">
+                                <span class="kpi-title">Profit Margin</span>
+                                <div class="kpi-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                                </div>
+                            </div>
+                            <div class="kpi-value" id="kpi-margin">0.0%</div>
+                            <div class="kpi-subtext">Average net margins across products</div>
+                        </div>
+
+                        <div class="kpi-card orange">
+                            <div class="kpi-header">
+                                <span class="kpi-title">Total Orders</span>
+                                <div class="kpi-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                                </div>
+                            </div>
+                            <div class="kpi-value" id="kpi-orders">0</div>
+                            <div class="kpi-subtext">Completed sales transactions</div>
+                        </div>
+                    </div>
+
+                    <!-- Core Charts Section -->
+                    <div class="chart-row">
+                        <div class="chart-card glass-panel flex-2">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Revenue & Profit Growth Trend</h3>
+                                <p class="chart-subtitle">Monthly sales run-rate analysis (24 Months)</p>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="trendChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card glass-panel flex-1">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Sales by Category</h3>
+                                <p class="chart-subtitle">Volume contribution by product sector</p>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="categoryChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-row">
+                        <div class="chart-card glass-panel flex-1">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Top 5 Best-Selling Products</h3>
+                                <p class="chart-subtitle">Ranked by revenue contribution</p>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="productsChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card glass-panel flex-1">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Payment Method Performance</h3>
+                                <p class="chart-subtitle">Transaction distribution & preference</p>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="paymentsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: PRODUCTS -->
+                <div class="tab-pane" id="tab-products">
+                    <div class="chart-row">
+                        <div class="chart-card glass-panel flex-2">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Detailed Category & Sub-Category Performance</h3>
+                                <p class="chart-subtitle">Ranks product tiers by revenue, units sold, and net profit margin</p>
+                            </div>
+                            <div class="table-container">
+                                <table id="tbl-subcategories" class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Category</th>
+                                            <th>Sub-Category</th>
+                                            <th>Units Sold</th>
+                                            <th>Total Revenue</th>
+                                            <th>Net Profit</th>
+                                            <th>Profit Margin</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Populated dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-card glass-panel flex-1">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Inventory Health Restock Alerts</h3>
+                                <p class="chart-subtitle">High demand products (sales in last 30d > current stock)</p>
+                            </div>
+                            <div class="table-container">
+                                <table id="tbl-restock" class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Product Name</th>
+                                            <th>Stock</th>
+                                            <th>30d Sales</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Populated dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-row">
+                        <div class="chart-card glass-panel flex-1">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Top 3 Selling Products Per Category</h3>
+                                <p class="chart-subtitle">Ranked within each parent category using window functions</p>
+                            </div>
+                            <div class="table-container">
+                                <table id="tbl-category-top-products" class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Category</th>
+                                            <th>Rank</th>
+                                            <th>Product Name</th>
+                                            <th>Total Units Sold</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Populated dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: CUSTOMERS -->
+                <div class="tab-pane" id="tab-customers">
+                    <div class="chart-row">
+                        <div class="chart-card glass-panel flex-1">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Customer Retention: Repeat Purchase Rate</h3>
+                                <p class="chart-subtitle">Measures loyalty: customers who bought more than once</p>
+                            </div>
+                            <div class="retention-container">
+                                <div class="retention-metric">
+                                    <div class="retention-percentage" id="retention-pct">0%</div>
+                                    <div class="retention-label">Repeat Purchase Rate</div>
+                                </div>
+                                <div class="retention-details">
+                                    <div class="detail-row">
+                                        <span>Total Unique Customers:</span>
+                                        <strong id="retention-total-cust">0</strong>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span>Repeat Customers (>1 order):</span>
+                                        <strong id="retention-repeat-cust">0</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-card glass-panel flex-2">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Customer Segment Spending (Demographics)</h3>
+                                <p class="chart-subtitle">Total Sales and Average Order Value (AOV) by Gender & Age Group</p>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="demographicsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-row">
+                        <div class="chart-card glass-panel flex-1">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Customer Cohort Segmentation (RFM Analysis)</h3>
+                                <p class="chart-subtitle">High value customer segmentations classified by Recency, Frequency, and Monetary scores</p>
+                            </div>
+                            <div class="table-container">
+                                <table id="tbl-rfm" class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Customer Name</th>
+                                            <th>Recency (Days)</th>
+                                            <th>Frequency</th>
+                                            <th>Lifetime Spend</th>
+                                            <th>RFM Score</th>
+                                            <th>Segment Type</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Populated dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: OPERATIONS -->
+                <div class="tab-pane" id="tab-operations">
+                    <div class="chart-row">
+                        <div class="chart-card glass-panel flex-2">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Hourly Sales Velocity</h3>
+                                <p class="chart-subtitle">Transaction counts and revenue rates throughout the day</p>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="hourlyChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-card glass-panel flex-1">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Discount Strategies & Margin Erosion</h3>
+                                <p class="chart-subtitle">Analysis of total revenue vs profit margins under varying discounts</p>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="discountMarginChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-row">
+                        <div class="chart-card glass-panel flex-1">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Geographic Sales Performance</h3>
+                                <p class="chart-subtitle">Top performing customer states ranked by revenue and AOV</p>
+                            </div>
+                            <div class="table-container">
+                                <table id="tbl-geography" class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>State</th>
+                                            <th>Active Customers</th>
+                                            <th>Order Volume</th>
+                                            <th>Total Revenue</th>
+                                            <th>Avg Order Value (AOV)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Populated dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="chart-card glass-panel flex-1">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Return Rates by Product Category</h3>
+                                <p class="chart-subtitle">Return occurrences compared to total order volume</p>
+                            </div>
+                            <div class="table-container">
+                                <table id="tbl-returns" class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Category</th>
+                                            <th>Total Orders</th>
+                                            <th>Returned Orders</th>
+                                            <th>Return Rate %</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Populated dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: SQL QUERY CONSOLE -->
+                <div class="tab-pane" id="tab-sql-console">
+                    <div class="sql-console-grid">
+                        <div class="console-controls glass-panel">
+                            <div class="control-header">
+                                <h3>SQL Execution Panel</h3>
+                                <p>Select a pre-designed query or write standard SQLite dialect directly.</p>
+                            </div>
+                            
+                            <div class="control-body">
+                                <div class="form-group">
+                                    <label for="query-select">Predefined Analytical Queries</label>
+                                    <select id="query-select" class="form-input">
+                                        <option value="" disabled selected>-- Choose an analytical query --</option>
+                                        <!-- Options populated dynamically -->
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="query-editor">SQL Editor</label>
+                                    <div class="editor-container">
+                                        <textarea id="query-editor" class="code-editor" spellcheck="false" placeholder="SELECT * FROM transactions LIMIT 10;"></textarea>
+                                    </div>
+                                </div>
+                                
+                                <div class="control-actions">
+                                    <button class="btn btn-secondary" id="btn-reset-sql">Reset</button>
+                                    <button class="btn btn-primary" id="btn-run-sql">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                                        Execute Query
+                                    </button>
+                                </div>
+
+                                <div id="query-info-box" class="info-box hidden">
+                                    <h4 id="query-info-title">Query Title</h4>
+                                    <p id="query-info-desc">Query description goes here...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SQL Console Results -->
+                        <div class="console-results flex-column">
+                            <div class="results-meta glass-panel hidden" id="results-meta-bar">
+                                <div class="meta-stat">
+                                    <span class="meta-label">Execution Time:</span>
+                                    <strong id="meta-time" class="pulse-text">0.00 ms</strong>
+                                </div>
+                                <div class="meta-stat">
+                                    <span class="meta-label">Rows Returned:</span>
+                                    <strong id="meta-rows">0</strong>
+                                </div>
+                                <div class="meta-actions">
+                                    <button class="btn-text" id="btn-export-csv">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                        Export CSV
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="results-data-panel glass-panel flex-grow flex-column">
+                                <div class="panel-header">
+                                    <h3>Results Output</h3>
+                                </div>
+                                
+                                <div class="results-display-area flex-grow table-container" id="results-table-container">
+                                    <div class="console-placeholder" id="console-welcome">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="placeholder-icon"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                                        <h4>Ready for SQL Execution</h4>
+                                        <p>Select a query on the left pane and click "Execute Query" to see outputs, execution times, and plans.</p>
+                                    </div>
+                                    <div class="console-loader hidden" id="console-spinner">
+                                        <div class="spinner"></div>
+                                        <p>Running query against 20,000+ transaction index...</p>
+                                    </div>
+                                    <table id="tbl-console-results" class="data-table hidden">
+                                        <thead id="tbl-console-head">
+                                            <!-- Dynamically generated header columns -->
+                                        </thead>
+                                        <tbody id="tbl-console-body">
+                                            <!-- Dynamically generated body rows -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Query execution plan explain panel -->
+                            <div class="explain-panel glass-panel hidden" id="results-explain-panel">
+                                <div class="explain-header">
+                                    <span class="explain-toggle-icon">▸</span>
+                                    <span>SQL Execution Query Plan (SQLite EXPLAIN)</span>
+                                </div>
+                                <div class="explain-content hidden" id="explain-content-text">
+                                    <!-- Explain detailed text -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+    
+    <!-- App Logic -->
+    <script src="app.js"></script>
+</body>
+</html>
