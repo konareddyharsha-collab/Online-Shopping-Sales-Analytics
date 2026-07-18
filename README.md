@@ -1,127 +1,130 @@
 # NexCart: Online Shopping Sales Analytics System
 
-An enterprise-grade, self-contained Sales Analytics platform that models a relational database with **22,500 realistic shopping transactions**, executes **17 advanced SQL queries**, and renders them in a stunning, **glassmorphic interactive web dashboard**.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Database: SQLite WASM](https://img.shields.io/badge/Database-SQLite%20WASM-003B57.svg?logo=sqlite)](https://sqlite.org/)
+[![UI: Vanilla JS & CSS](https://img.shields.io/badge/UI-Vanilla%20JS%20%26%20CSS-F7DF1E.svg?logo=javascript)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![Charts: Chart.js](https://img.shields.io/badge/Charts-Chart.js-FF6384.svg?logo=chartdotjs)](https://www.chartjs.org/)
+
+NexCart is an enterprise-grade, serverless Sales Analytics Platform. It features a relational schema containing **22,500 realistic transaction records** and an interactive, glassmorphic executive dashboard that executes **17 advanced analytical queries** directly in the browser via SQLite WebAssembly (WASM).
 
 ---
 
-## 🌟 Key Features
+## 🎯 Project Overview & Objective
 
-- **Relational Schema Design**: Includes three primary tables: `customers`, `products`, and `transactions` modeling standard e-commerce setups.
-- **Robust Synthetic Data Generator**: Creates 1,200 unique customers, a structured product catalog, and 22,500 sales transactions distributed across 2 years (2024–2025) with realistic seasonal, weekly, hourly, and demographic patterns.
-- **17 Advanced Analytical SQL Queries**: Includes multi-stage CTEs, Window Functions (`LAG`, `DENSE_RANK`, `NTILE`), conditional aggregations, cohorts, and metrics like CLV, RFM segmentation, and MoM growth.
-- **Predefined REST API Server**: A lightweight, dependency-free Python backend served on port 8000 using standard libraries (`http.server`, `sqlite3`, `json`).
-- **Interactive SQL Console**: Write custom queries against the 20,000+ record indexes directly in the browser. Features execution safety checks, performance timers, syntax diagnostic output, `EXPLAIN QUERY PLAN` optimization trees, and CSV downloads.
-- **Premium Glassmorphic UI**: Beautiful dark-mode dashboard styled with CSS Grid/Flexbox, custom typography, hover transitions, and dynamic Chart.js visualizations.
+The primary objective of this project is to simulate, query, and visualize key sales performance metrics for an online retail platform. By leveraging advanced SQL capabilities, the platform extracts business intelligence to solve three critical retail challenges:
+1. **Revenue Leakage**: Identifying product return rates and high discount erosion margins.
+2. **Customer Retention**: Segmenting customers using RFM analysis to identify VIP cohorts and at-risk churn groups.
+3. **Inventory Management**: Automatically flagging low-stock items with high sales velocity (30-day run rate).
 
 ---
 
-## 📁 Project Directory Structure
+## 📁 Repository Structure
 
 ```
-Online Shopping Sales Analytics/
+Online-Shopping-Sales-Analytics/
 ├── public/
-│   ├── index.html         # Dashboard HTML structure
-│   ├── style.css          # Glassmorphic dark-mode CSS styles
-│   └── app.js             # Client-side API fetch & Chart.js renderer
-├── data_generator.py      # Generates sales.db (SQLite) & online_shopping_sales.sql (MySQL)
-├── server.py              # Custom Python HTTP Server & SQL execution API
-├── queries.sql            # Master file with 17 commented advanced queries
-└── README.md              # Project documentation
+│   ├── index.html          # Glassmorphic Executive Dashboard
+│   ├── style.css           # Vanilla CSS Styling & Visual Tokens
+│   ├── app.js              # Client-Side WASM SQL Execution & Chart.js Config
+│   └── sales.db            # SQLite Database File containing 22,500 records
+├── data_generator.py       # Python script generating database & SQL export
+├── online_shopping_sales.sql# MySQL Database schema & data population dump
+├── queries.sql             # SQL Script containing the 17 commented advanced queries
+├── server.py               # Optional Python local REST API server fallback
+└── README.md               # Production documentation
 ```
 
 ---
 
-## 💾 Database Schema
+## 💾 Relational Database Schema
 
-The system supports both **SQLite** (local runtime database) and **MySQL** (using the auto-generated `online_shopping_sales.sql` script).
+The database design contains 3 normalized tables:
 
-### Schema Diagram (Entity Relationships)
 ```
-  [customers]                  [products]
-  - customer_id (PK, Int)      - product_id (PK, Int)
-  - customer_name (Varchar)    - product_name (Varchar)
-  - email (Unique, Varchar)    - category (Varchar)
-  - gender (Varchar)           - sub_category (Varchar)
-  - age (Int)                  - price (Decimal)
-  - location (Varchar)         - cost (Decimal)
-  - signup_date (Date)         - stock_quantity (Int)
-        │                            │
-        └──────────────┬─────────────┘
-                       ▼
-                 [transactions]
-                 - transaction_id (PK, Int)
-                 - customer_id (FK, Int)
-                 - product_id (FK, Int)
-                 - transaction_date (Datetime)
-                 - quantity (Int)
-                 - unit_price (Decimal)
-                 - discount (Decimal)
-                 - total_amount (Decimal)
-                 - payment_method (Varchar)
-                 - shipping_method (Varchar)
-                 - order_status (Varchar)
+  ┌────────────────────────┐         ┌────────────────────────┐
+  │       customers        │         │        products        │
+  ├────────────────────────┤         ├────────────────────────┤
+  │ customer_id (PK, Int)  │         │ product_id (PK, Int)   │
+  │ customer_name (Varchar)│         │ product_name (Varchar) │
+  │ email (Unique, Varchar)│         │ category (Varchar)     │
+  │ gender (Varchar)       │         │ sub_category (Varchar) │
+  │ age (Int)              │         │ price (Decimal)        │
+  │ location (Varchar)     │         │ cost (Decimal)         │
+  │ signup_date (Date)     │         │ stock_quantity (Int)   │
+  └───────────┬────────────┘         └───────────┬────────────┘
+              │                                  │
+              └────────────────┬─────────────────┘
+                               ▼
+                ┌────────────────────────┐
+                │      transactions      │
+                ├────────────────────────┤
+                │ transaction_id (PK)    │
+                │ customer_id (FK)       │
+                │ product_id (FK)        │
+                │ transaction_date (DT)  │
+                │ quantity (Int)         │
+                │ unit_price (Decimal)   │
+                │ discount (Decimal)     │
+                │ total_amount (Decimal) │
+                │ payment_method (Varchar)
+                │ shipping_method (Varchar)
+                │ order_status (Varchar) │
+                └────────────────────────┘
 ```
 
 ---
 
-## 📊 The 17 SQL Queries Included
+## 📊 Analytical SQL Queries Directory
 
-All queries are fully documented and structured in `queries.sql`:
-1. **Core Business KPIs**: Total orders, items sold, revenue, COGS, net profit, and net margin %.
-2. **Monthly Trends**: Seasonality and revenue/profit metrics over 24 months.
-3. **Category Rankings**: Revenue, profit contribution, and margin per product category.
-4. **Top 10 Selling Products**: Top items driving top-line revenue.
-5. **Customer Demographics**: Spending power grouped by gender and age brackets (18-24, 25-34, etc.).
-6. **Geographic Distribution**: Heatmap-compatible rankings of customer state locations.
-7. **Customer Lifetime Value (CLV)**: Ranks customers by cumulative transactional spend.
-8. **Repeat Purchase Rate**: Percentage of customers completing more than one transaction.
-9. **Payment Method Efficiency**: Popularity and average order size by checkout gateway.
-10. **Discount Strategy Impact**: Analyzes whether discount ranges correlate with net margins.
-11. **Hourly Sales Velocity**: Hour-by-hour transaction frequencies (peak shopping hours).
-12. **High-Margin Sub-categories**: Discovers profitable subcategories.
-13. **Restock Inventory Alerts**: Flags fast-selling products whose 30-day velocity exceeds current stock.
-14. **Return Rates by Category**: Audits product quality issues by examining returned orders.
-15. **Month-over-Month Revenue Growth**: Evaluates sales momentum using the `LAG` window function.
-16. **Top 3 Products Per Category**: Ranks items locally in categories using the `DENSE_RANK` window partition.
-17. **RFM Segmentation (Recency, Frequency, Monetary)**: Assigns customer segments (VIP, Loyal, At Risk, Lost) using `NTILE(5)` scores.
+All 17 queries are preloaded in [queries.sql](queries.sql) and the SQL Console.
 
----
-
-## 🚀 Setup & Launch Instructions
-
-### Prerequisites
-- **Python 3.x** must be installed on your local machine.
-- No external packages (like Flask, Django, or SQLAlchemy) are required. The project runs on standard libraries!
-
-### Step 1: Generate Database & Data Dump
-Generate the SQLite database (`sales.db`) and the MySQL-compatible schema dump (`online_shopping_sales.sql`):
-```bash
-python data_generator.py
-```
-*Execution creates a 5MB+ SQLite database populated with 22,500 realistic records and prints summary tallies.*
-
-### Step 2: Start Python Web & API Server
-Run the backend server locally:
-```bash
-python server.py
-```
-*This binds to port 8000 and connects to `sales.db`. Keep this window open.*
-
-### Step 3: Open Dashboard
-Open your web browser and navigate to:
-```
-http://localhost:8000
-```
-Explore the dashboard metrics, toggle navigation panels, and execute queries dynamically using the console!
+| ID | Name | Core SQL Mechanics | Business Insight |
+|:---|:---|:---|:---|
+| **1** | Core Business KPIs | Basic Aggregations (`SUM`, `ROUND`) | Total Revenue, Profit, and Net Profit Margins. |
+| **2** | Monthly Trends | Date Formats, Grouping | Year-over-Year run-rates & holiday spikes. |
+| **3** | Category Share | Joining, Aggregations | Revenue contributions by major product lines. |
+| **4** | Top 10 Best Sellers | `LIMIT`, Sorting | High-value items generating top-line sales. |
+| **5** | Customer Demographics | `WITH` CTE, `CASE WHEN` brackets | Value distribution by gender and age segments. |
+| **6** | Geographic Growth | Grouping by State | Geographic hubs driving high Average Order Value (AOV). |
+| **7** | Lifetime Value (CLV) | Customer joins, grouping | Ranks top 10 customers by cumulative net spend. |
+| **8** | Retention Rate | Subquery, Condition check | Ratio of repeat shoppers to one-time buyers. |
+| **9** | Gateway Share | Grouping by payment type | Customer preferences and checkout frequencies. |
+| **10** | Discount Impact | Bracket categorization | Analyzes if discounts erode profit margins. |
+| **11** | Hourly Velocity | Date hour extractions | Identifies peak shopping times for load management. |
+| **12** | Sub-Category Profit | Grouping, Margins | Identifies high-margin niches for inventory expansion. |
+| **13** | Inventory Reorder | Common Table Expressions (CTE) | Flags fast-selling items with critical stock levels. |
+| **14** | Category Return Rates | Conditional grouping | Flags product lines with high returns for auditing. |
+| **15** | Month-over-Month Growth| Window Function (`LAG`) | Tracks sales momentum variances month-to-month. |
+| **16** | Local Sales Ranking | Window Function (`DENSE_RANK`) | Extracts top 3 products in each category. |
+| **17** | RFM Segmentation | Window Function (`NTILE`), String concat | Classifies users (VIP, Loyal, Churn Risk, Lost). |
 
 ---
 
-## 🏛️ MySQL Database Integration
+## 🚀 Getting Started
 
-To run this dataset on a production MySQL database:
-1. Copy the auto-generated [online_shopping_sales.sql](file:///c:/Users/konar/OneDrive/Desktop/Online%20Shopping%20Sales%20Analytics/online_shopping_sales.sql) script.
-2. Run it inside your MySQL shell or client (like phpMyAdmin, DBeaver, or Workbench):
-   ```sql
-   SOURCE online_shopping_sales.sql;
+### Method A: Zero Setup (Client-Side WASM Website)
+You do not need to install Python libraries or database servers to load this project! 
+1. Run a simple local file server in the `public` directory:
+   ```bash
+   cd public
+   python -m http.server 8000
    ```
-3. Copy the MySQL-adapted version of the queries from [queries.sql](file:///c:/Users/konar/OneDrive/Desktop/Online%20Shopping%20Sales%20Analytics/queries.sql) (adapted notes are provided in query comments where date formats differ, e.g., `DATE_FORMAT` instead of `strftime`, `NOW() - INTERVAL 30 DAY` instead of `datetime('now', '-30 days')`).
+2. Open your browser and navigate to: **[http://localhost:8000](http://localhost:8000)**
+*The browser loads SQLite directly in WebAssembly, downloading the `sales.db` file and running queries client-side.*
+
+### Method B: Optional Python REST API Server Fallback
+If you wish to run a dedicated backend server instead of loading the database in the browser:
+1. Run `python server.py` in the root folder.
+2. The server connects locally to `sales.db` and opens an API port. Navigate to **[http://localhost:8000](http://localhost:8000)**.
+
+---
+
+## ☁️ Production Deployment
+
+### 1-Click Deployment (GitHub Pages)
+Since this dashboard runs entirely client-side via SQLite WebAssembly, you can deploy it as a static page:
+1. Push this folder to a GitHub Repository.
+2. Go to **Settings** > **Pages** in your repository.
+3. Under **Build and deployment**, select **Deploy from a branch**.
+4. Choose the `main` branch and select the `/public` folder, then click **Save**.
+5. Once built, access the live link directly!
